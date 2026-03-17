@@ -19,14 +19,11 @@ Browse, discover, and submit nano-contract blueprints built by the Hathor commun
 - [React](https://react.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [shadcn/ui](https://ui.shadcn.com/)
-- [NextAuth.js](https://next-auth.js.org/) (GitHub OAuth)
-
 ## Getting Started
 
 ### Prerequisites
 
 - [Bun](https://bun.sh/) or Node.js 18+
-- A GitHub OAuth app (for authentication)
 
 ### Setup
 
@@ -41,18 +38,7 @@ Browse, discover, and submit nano-contract blueprints built by the Hathor commun
    bun install
    ```
 
-3. Copy the environment template and fill in your values:
-   ```bash
-   cp .env.example .env
-   ```
-
-   Required variables:
-   - `NEXTAUTH_SECRET` — Random secret for NextAuth session encryption
-   - `NEXTAUTH_URL` — Your deployment URL (e.g. `http://localhost:3000`)
-   - `GITHUB_CLIENT_ID` — GitHub OAuth app client ID
-   - `GITHUB_CLIENT_SECRET` — GitHub OAuth app client secret
-
-4. Run the development server:
+3. Run the development server:
    ```bash
    bun dev
    ```

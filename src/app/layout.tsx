@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { VisualEditsMessenger } from "orchids-visual-edits";
 import { Navbar } from "@/components/Navbar";
-import { AuthProvider } from "@/components/AuthProvider";
 import { AgentationProvider } from "@/components/AgentationProvider";
 
 const geistSans = Geist({
@@ -43,13 +42,11 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background font-sans`}
         >
-          <AuthProvider>
-            <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+          <div className="fixed inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
             <Navbar />
             <main className="relative pt-12">
               {children}
             </main>
-          </AuthProvider>
             <VisualEditsMessenger />
             <AgentationProvider />
           </body>
