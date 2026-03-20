@@ -19,16 +19,9 @@ export const metadata: Metadata = {
   title: "Blueprint Marketplace",
   description: "The ultimate library of reusable building blocks for Hathor Network.",
   icons: {
-    icon: [
-      {
-        url: "/icon-light.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-    ],
+    icon: "/favicon-brand.png",
+    shortcut: "/favicon-brand.png",
+    apple: "/favicon-brand.png",
   },
 };
 

@@ -355,18 +355,21 @@ export function Marketplace() {
               <span className="text-xs font-mono text-primary">{HARDCODED_BLUEPRINTS.length} blueprints</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Blueprint <span className="text-primary">Marketplace</span>
+              <img src="/logo-dark.svg" alt="Blueprint Marketplace" className="h-9 md:h-11 w-auto" />
             </h1>
             <p className="text-muted-foreground max-w-xl text-sm leading-relaxed">
               Reusable nano-contract blueprints for Hathor Network, submitted by the community. Royalties for blueprint developers are coming—Being an early contributor can pay off!
             </p>
             <div className="flex gap-3 pt-1">
-              <Button size="sm" asChild>
-                <a href="https://github.com/HathorNetwork/community-blueprints" target="_blank">
-                  <Github className="mr-1.5 h-3.5 w-3.5" />
-                  Submit Blueprint
-                </a>
-              </Button>
+              <a
+                href="https://github.com/HathorNetwork/community-blueprints"
+                target="_blank"
+                className="inline-flex items-center h-8 text-sm px-3 rounded-md font-medium transition-opacity hover:opacity-90"
+                style={{ backgroundColor: 'var(--cta)', color: 'var(--cta-foreground)', fontFamily: 'var(--font-display)' }}
+              >
+                <Github className="mr-1.5 h-3.5 w-3.5" />
+                Submit Blueprint
+              </a>
               <Button size="sm" variant="outline" asChild>
                 <a href="https://docs.hathor.network/" target="_blank">
                   Docs <ExternalLink className="ml-1.5 h-3 w-3" />
