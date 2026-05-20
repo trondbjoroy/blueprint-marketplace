@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Search, Copy, Check, Github, ArrowRight, Loader2, ExternalLink } from 'lucide-react';
+import { Search, Copy, Check, Github, ArrowRight, ExternalLink } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
@@ -54,7 +54,6 @@ Dozer Pool Manager enables decentralized token swaps and liquidity provision acr
     category: 'DeFi',
     code: '// No code preview available',
     status: 'Published',
-    githubIssueNumber: 2,
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/2',
     versionHistory: [{ version: '1.0.0', date: '2025-11-18', changes: 'Initial submission' }],
   },
@@ -97,7 +96,6 @@ Oasis enables users to deposit tokens (Token B) into a liquidity pool alongside 
     category: 'DeFi',
     code: '// No code preview available',
     status: 'Published',
-    githubIssueNumber: 3,
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/3',
     versionHistory: [{ version: '1.0.0', date: '2025-11-18', changes: 'Initial submission' }],
   },
@@ -149,7 +147,6 @@ The blueprint enables **trust-minimized, on-chain OTC token swaps** without rely
     category: 'DeFi',
     code: '// No code preview available',
     status: 'Published',
-    githubIssueNumber: 4,
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/4',
     versionHistory: [{ version: '1.0.0', date: '2025-12-31', changes: 'Initial submission' }],
   },
@@ -186,7 +183,6 @@ The canvas allows users to paint individual pixels on a shared on-chain grid, wi
     category: 'Gaming',
     code: '// No code preview available',
     status: 'Published',
-    githubIssueNumber: 6,
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/6',
     versionHistory: [{ version: '1.0.0', date: '2026-01-21', changes: 'Initial submission' }],
   },
@@ -227,9 +223,55 @@ The creator initializes the contract with a description, ticket price, and commi
     category: 'Betting',
     code: '// No code preview available',
     status: 'Published',
-    githubIssueNumber: 7,
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/7',
     versionHistory: [{ version: '1.0.0', date: '2026-02-12', changes: 'Initial submission' }],
+  },
+  {
+    id: 'hathordice',
+    name: 'HathorDice',
+    description: 'A gambling nano-contract inspired by SatoshiDice. Players bet against the contract — win a payout proportional to their odds, or lose it all.',
+    longDescription: `# HathorDice Blueprint
+
+HathorDice is a gambling contract modeled after the original SatoshiDice. Players wager tokens against the contract: if they win, they receive a payout inversely proportional to their probability of winning. If they lose, they forfeit the entire bet.
+
+## How it works
+
+The house maintains a configurable edge defined in basis points (\`house_edge_basis_points\`). With a 1.9% house edge, the expected return across many plays is 0.981. A liquidity provider system funds the betting pool, and pre-execution payout validation ensures sufficient reserves before any bet is accepted.
+
+## Init parameters
+
+- \`house_edge_basis_points\`: House edge ≤ 10,000 bps (e.g. 190 = 1.9%)
+- \`random_bit_length\`: Entropy size (16–32 bits)
+- \`max_bet_amount\`: Maximum allowed bet (> 0)
+- \`max_multiplier_tenths\`: Payout multiplier cap (in tenths)
+
+## State
+
+- \`liquidity_providers\`: caller_id → LP contribution
+- \`total_liquidity_provided\`: Aggregate LP capital
+- \`balances\`: Per-user token balances
+- \`available_tokens\`: Pool liquidity available for payouts
+
+## Methods
+
+- **initialize**: Sets house edge, randomness, and bet limits
+- **bet**: Place a bet; payout pre-validated before the roll
+- **add_liquidity**: Deposit tokens to fund the betting pool
+- **remove_liquidity**: Withdraw LP tokens from the pool
+
+Built with Hathor Nano Contracts for Bitcoin-grade security and verifiable on-chain randomness.`,
+    author: {
+      name: 'msbrogli',
+      avatar: 'https://github.com/msbrogli.png',
+      github: 'msbrogli',
+    },
+    version: '1.0.0',
+    timestamp: '2025-11-19T00:00:00Z',
+    category: 'Betting',
+    code: '// No code preview available',
+    status: 'Published',
+    githubUrl: 'https://github.com/HathorNetwork/hathor-core/pull/1484',
+    versionHistory: [{ version: '1.0.0', date: '2025-11-19', changes: 'Initial release — implements payout pre-validation and configurable house edge' }],
   },
   {
     id: 'pr-8',
@@ -276,7 +318,6 @@ Polls enables the creation of on-chain governance votes where each participant's
     category: 'Governance',
     code: '// No code preview available',
     status: 'Published',
-    githubIssueNumber: 8,
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/8',
     versionHistory: [{ version: '1.0.0', date: '2026-03-17', changes: 'Initial submission' }],
   },
@@ -298,27 +339,12 @@ export function Marketplace() {
   const [selectedCategory, setSelectedCategory] = useState<Category | 'All'>('All');
   const [selectedBlueprint, setSelectedBlueprint] = useState<Blueprint | null>(null);
   const [copied, setCopied] = useState(false);
-  const [copyingCode, setCopyingCode] = useState(false);
 
   const handleCopyCode = async () => {
-    if (!selectedBlueprint) return;
-    setCopyingCode(true);
-    try {
-      if (selectedBlueprint.githubIssueNumber) {
-        const res = await fetch(`/api/blueprints/code?issue=${selectedBlueprint.githubIssueNumber}`);
-        const data = await res.json();
-        if (data.code) {
-          await navigator.clipboard.writeText(data.code);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-          return;
-        }
-      }
-    } catch {
-      // ignore
-    } finally {
-      setCopyingCode(false);
-    }
+    if (!selectedBlueprint?.code) return;
+    await navigator.clipboard.writeText(selectedBlueprint.code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const filteredBlueprints = useMemo(() => {
@@ -605,22 +631,17 @@ export function Marketplace() {
 
                             {/* Actions */}
                             <div className="space-y-2 pt-2">
-                              {selectedBlueprint.githubIssueNumber && (
-                                <Button
-                                  onClick={handleCopyCode}
-                                  disabled={copyingCode}
-                                  className="w-full h-9 text-xs"
-                                >
-                                  {copyingCode ? (
-                                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                                  ) : copied ? (
-                                    <Check className="mr-1.5 h-3.5 w-3.5" />
-                                  ) : (
-                                    <Copy className="mr-1.5 h-3.5 w-3.5" />
-                                  )}
-                                  {copied ? 'Copied!' : 'Copy Blueprint Code'}
-                                </Button>
-                              )}
+                              <Button
+                                onClick={handleCopyCode}
+                                className="w-full h-9 text-xs"
+                              >
+                                {copied ? (
+                                  <Check className="mr-1.5 h-3.5 w-3.5" />
+                                ) : (
+                                  <Copy className="mr-1.5 h-3.5 w-3.5" />
+                                )}
+                                {copied ? 'Copied!' : 'Copy Blueprint Code'}
+                              </Button>
                               <Button variant="outline" className="w-full h-9 text-xs" asChild>
                                 <a href={selectedBlueprint.githubUrl} target="_blank">
                                   <Github className="mr-1.5 h-3.5 w-3.5" />
