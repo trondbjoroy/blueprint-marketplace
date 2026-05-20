@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Search, Copy, Check, Github, ArrowRight, ExternalLink } from 'lucide-react';
+import { Search, Copy, Check, Github, ArrowRight, ExternalLink, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
@@ -53,6 +53,7 @@ Dozer Pool Manager enables decentralized token swaps and liquidity provision acr
     timestamp: '2025-11-18T12:45:01Z',
     category: 'DeFi',
     code: '// No code preview available',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/master/blueprints/dozer-pool-manager/dozer_pool_manager.py',
     status: 'Published',
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/2',
     versionHistory: [{ version: '1.0.0', date: '2025-11-18', changes: 'Initial submission' }],
@@ -95,6 +96,7 @@ Oasis enables users to deposit tokens (Token B) into a liquidity pool alongside 
     timestamp: '2025-11-18T12:45:18Z',
     category: 'DeFi',
     code: '// No code preview available',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/master/blueprints/oasis/oasis.py',
     status: 'Published',
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/3',
     versionHistory: [{ version: '1.0.0', date: '2025-11-18', changes: 'Initial submission' }],
@@ -146,6 +148,7 @@ The blueprint enables **trust-minimized, on-chain OTC token swaps** without rely
     timestamp: '2025-12-31T03:35:28Z',
     category: 'DeFi',
     code: '// No code preview available',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/master/blueprints/otc_escrow_swap/otc_escrow_swap.py',
     status: 'Published',
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/4',
     versionHistory: [{ version: '1.0.0', date: '2025-12-31', changes: 'Initial submission' }],
@@ -182,6 +185,7 @@ The canvas allows users to paint individual pixels on a shared on-chain grid, wi
     timestamp: '2026-01-21T10:14:02Z',
     category: 'Gaming',
     code: '// No code preview available',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/4a92494d87e4a44d476323900c31e58a54e83b42/blueprints/pxiel/pxiel.py',
     status: 'Published',
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/6',
     versionHistory: [{ version: '1.0.0', date: '2026-01-21', changes: 'Initial submission' }],
@@ -222,6 +226,7 @@ The creator initializes the contract with a description, ticket price, and commi
     timestamp: '2026-02-12T17:02:44Z',
     category: 'Betting',
     code: '// No code preview available',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/26d07184d541bacae92cf970c372e0b0e7676664/blueprints/lottery/lottery.py',
     status: 'Published',
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/7',
     versionHistory: [{ version: '1.0.0', date: '2026-02-12', changes: 'Initial submission' }],
@@ -268,7 +273,70 @@ Built with Hathor Nano Contracts for Bitcoin-grade security and verifiable on-ch
     version: '1.0.0',
     timestamp: '2025-11-19T00:00:00Z',
     category: 'Betting',
-    code: '// No code preview available',
+    code: `class HathorDice(NanoContract):
+    """
+    Gambling contract inspired by SatoshiDice.
+
+    Init parameters:
+        house_edge_basis_points: House edge (<=10,000 bps, e.g. 190 = 1.9%)
+        random_bit_length: Entropy size (16-32 bits)
+        max_bet_amount: Maximum allowed bet (> 0)
+        max_multiplier_tenths: Payout multiplier cap (in tenths)
+
+    State:
+        liquidity_providers: caller_id -> LP contribution
+        total_liquidity_provided: aggregate LP capital
+        balances: per-user token balances
+        available_tokens: pool liquidity available for payouts
+    """
+
+    @public
+    def initialize(
+        self,
+        house_edge_basis_points: int,
+        random_bit_length: int,
+        max_bet_amount: int,
+        max_multiplier_tenths: int,
+    ) -> None:
+        assert 0 < house_edge_basis_points <= 10_000
+        assert 16 <= random_bit_length <= 32
+        assert max_bet_amount > 0
+        self.house_edge_bps = house_edge_basis_points
+        self.random_bit_length = random_bit_length
+        self.max_bet_amount = max_bet_amount
+        self.max_multiplier_tenths = max_multiplier_tenths
+
+    @public
+    def bet(self, multiplier_tenths: int) -> None:
+        """Place a bet. multiplier_tenths defines odds and payout."""
+        assert self.tx.value <= self.max_bet_amount
+        assert 0 < multiplier_tenths <= self.max_multiplier_tenths
+
+        payout = self.tx.value * multiplier_tenths // 10
+        assert self.available_tokens >= payout, "Insufficient pool liquidity"
+
+        win_probability = 10 * (10_000 - self.house_edge_bps) // multiplier_tenths
+        roll = self.random(2 ** self.random_bit_length)
+
+        if roll < win_probability * (2 ** self.random_bit_length) // 10_000:
+            self.available_tokens -= payout
+            self.transfer(self.tx.caller, payout)
+        else:
+            self.available_tokens += self.tx.value
+
+    @public
+    def add_liquidity(self) -> None:
+        self.liquidity_providers[self.tx.caller] += self.tx.value
+        self.total_liquidity_provided += self.tx.value
+        self.available_tokens += self.tx.value
+
+    @public
+    def remove_liquidity(self, amount: int) -> None:
+        assert self.liquidity_providers[self.tx.caller] >= amount
+        self.liquidity_providers[self.tx.caller] -= amount
+        self.total_liquidity_provided -= amount
+        self.available_tokens -= amount
+        self.transfer(self.tx.caller, amount)`,
     status: 'Published',
     githubUrl: 'https://github.com/HathorNetwork/hathor-core/pull/1484',
     versionHistory: [{ version: '1.0.0', date: '2025-11-19', changes: 'Initial release — implements payout pre-validation and configurable house edge' }],
@@ -317,6 +385,7 @@ Polls enables the creation of on-chain governance votes where each participant's
     timestamp: '2026-03-17T10:53:36Z',
     category: 'Governance',
     code: '// No code preview available',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/5f957eebc2b75b6cd3acf9dc379a107c32280f75/blueprints/poll/poll.py',
     status: 'Published',
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/8',
     versionHistory: [{ version: '1.0.0', date: '2026-03-17', changes: 'Initial submission' }],
@@ -339,12 +408,29 @@ export function Marketplace() {
   const [selectedCategory, setSelectedCategory] = useState<Category | 'All'>('All');
   const [selectedBlueprint, setSelectedBlueprint] = useState<Blueprint | null>(null);
   const [copied, setCopied] = useState(false);
+  const [fetchingCode, setFetchingCode] = useState(false);
 
   const handleCopyCode = async () => {
-    if (!selectedBlueprint?.code) return;
-    await navigator.clipboard.writeText(selectedBlueprint.code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (!selectedBlueprint) return;
+    const isPlaceholder = !selectedBlueprint.code || selectedBlueprint.code === '// No code preview available';
+    if (!isPlaceholder) {
+      await navigator.clipboard.writeText(selectedBlueprint.code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      return;
+    }
+    if (selectedBlueprint.codeUrl) {
+      setFetchingCode(true);
+      try {
+        const res = await fetch(selectedBlueprint.codeUrl);
+        const code = await res.text();
+        await navigator.clipboard.writeText(code);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } finally {
+        setFetchingCode(false);
+      }
+    }
   };
 
   const filteredBlueprints = useMemo(() => {
@@ -631,17 +717,29 @@ export function Marketplace() {
 
                             {/* Actions */}
                             <div className="space-y-2 pt-2">
-                              <Button
-                                onClick={handleCopyCode}
-                                className="w-full h-9 text-xs"
-                              >
-                                {copied ? (
-                                  <Check className="mr-1.5 h-3.5 w-3.5" />
-                                ) : (
-                                  <Copy className="mr-1.5 h-3.5 w-3.5" />
-                                )}
-                                {copied ? 'Copied!' : 'Copy Blueprint Code'}
-                              </Button>
+                              {(selectedBlueprint.code && selectedBlueprint.code !== '// No code preview available') || selectedBlueprint.codeUrl ? (
+                                <Button
+                                  onClick={handleCopyCode}
+                                  disabled={fetchingCode}
+                                  className="w-full h-9 text-xs"
+                                >
+                                  {fetchingCode ? (
+                                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                                  ) : copied ? (
+                                    <Check className="mr-1.5 h-3.5 w-3.5" />
+                                  ) : (
+                                    <Copy className="mr-1.5 h-3.5 w-3.5" />
+                                  )}
+                                  {fetchingCode ? 'Fetching...' : copied ? 'Copied!' : 'Copy Blueprint Code'}
+                                </Button>
+                              ) : (
+                                <Button className="w-full h-9 text-xs" asChild>
+                                  <a href={selectedBlueprint.githubUrl} target="_blank">
+                                    <Github className="mr-1.5 h-3.5 w-3.5" />
+                                    View Code on GitHub
+                                  </a>
+                                </Button>
+                              )}
                               <Button variant="outline" className="w-full h-9 text-xs" asChild>
                                 <a href={selectedBlueprint.githubUrl} target="_blank">
                                   <Github className="mr-1.5 h-3.5 w-3.5" />

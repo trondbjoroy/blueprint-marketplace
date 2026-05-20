@@ -14,6 +14,7 @@ export interface Blueprint {
   timestamp: string;
   category: Category;
   code: string;
+  codeUrl?: string;
   status: 'Published';
   githubUrl?: string;
   versionHistory: {
