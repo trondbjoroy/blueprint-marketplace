@@ -55,7 +55,7 @@ Dozer Pool Manager enables decentralized token swaps and liquidity provision acr
     code: '// No code preview available',
     codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/master/blueprints/dozer-pool-manager/dozer_pool_manager.py',
     status: 'Published',
-    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/2',
+    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/tree/master/blueprints/dozer-pool-manager',
     versionHistory: [{ version: '1.0.0', date: '2025-11-18', changes: 'Initial submission' }],
   },
   {
@@ -98,7 +98,7 @@ Oasis enables users to deposit tokens (Token B) into a liquidity pool alongside 
     code: '// No code preview available',
     codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/master/blueprints/oasis/oasis.py',
     status: 'Published',
-    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/3',
+    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/tree/master/blueprints/oasis',
     versionHistory: [{ version: '1.0.0', date: '2025-11-18', changes: 'Initial submission' }],
   },
   {
@@ -150,7 +150,7 @@ The blueprint enables **trust-minimized, on-chain OTC token swaps** without rely
     code: '// No code preview available',
     codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/master/blueprints/otc_escrow_swap/otc_escrow_swap.py',
     status: 'Published',
-    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/4',
+    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/tree/master/blueprints/otc_escrow_swap',
     versionHistory: [{ version: '1.0.0', date: '2025-12-31', changes: 'Initial submission' }],
   },
   {
@@ -185,9 +185,9 @@ The canvas allows users to paint individual pixels on a shared on-chain grid, wi
     timestamp: '2026-01-21T10:14:02Z',
     category: 'Gaming',
     code: '// No code preview available',
-    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/4a92494d87e4a44d476323900c31e58a54e83b42/blueprints/pxiel/pxiel.py',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/master/blueprints/pxiel/pxiel.py',
     status: 'Published',
-    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/6',
+    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/tree/master/blueprints/pxiel',
     versionHistory: [{ version: '1.0.0', date: '2026-01-21', changes: 'Initial submission' }],
   },
   {
@@ -226,15 +226,15 @@ The creator initializes the contract with a description, ticket price, and commi
     timestamp: '2026-02-12T17:02:44Z',
     category: 'Betting',
     code: '// No code preview available',
-    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/26d07184d541bacae92cf970c372e0b0e7676664/blueprints/lottery/lottery.py',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/master/blueprints/lottery/lottery.py',
     status: 'Published',
-    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/7',
+    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/tree/master/blueprints/lottery',
     versionHistory: [{ version: '1.0.0', date: '2026-02-12', changes: 'Initial submission' }],
   },
   {
     id: 'hathordice',
     name: 'HathorDice',
-    description: 'A gambling nano-contract inspired by SatoshiDice. Players bet against the contract — win a payout proportional to their odds, or lose it all.',
+    description: 'A gambling nano-contract inspired by SatoshiDice. Players bet against the contract and win a payout proportional to their odds, or lose it all.',
     longDescription: `# HathorDice Blueprint
 
 HathorDice is a gambling contract modeled after the original SatoshiDice. Players wager tokens against the contract: if they win, they receive a payout inversely proportional to their probability of winning. If they lose, they forfeit the entire bet.
@@ -246,7 +246,7 @@ The house maintains a configurable edge defined in basis points (\`house_edge_ba
 ## Init parameters
 
 - \`house_edge_basis_points\`: House edge ≤ 10,000 bps (e.g. 190 = 1.9%)
-- \`random_bit_length\`: Entropy size (16–32 bits)
+- \`random_bit_length\`: Entropy size (16-32 bits)
 - \`max_bet_amount\`: Maximum allowed bet (> 0)
 - \`max_multiplier_tenths\`: Payout multiplier cap (in tenths)
 
@@ -339,7 +339,7 @@ Built with Hathor Nano Contracts for Bitcoin-grade security and verifiable on-ch
         self.transfer(self.tx.caller, amount)`,
     status: 'Published',
     githubUrl: 'https://github.com/HathorNetwork/hathor-core/pull/1484',
-    versionHistory: [{ version: '1.0.0', date: '2025-11-19', changes: 'Initial release — implements payout pre-validation and configurable house edge' }],
+    versionHistory: [{ version: '1.0.0', date: '2025-11-19', changes: 'Initial release with payout pre-validation and configurable house edge' }],
   },
   {
     id: 'pr-8',
@@ -385,9 +385,9 @@ Polls enables the creation of on-chain governance votes where each participant's
     timestamp: '2026-03-17T10:53:36Z',
     category: 'Governance',
     code: '// No code preview available',
-    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/5f957eebc2b75b6cd3acf9dc379a107c32280f75/blueprints/poll/poll.py',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/master/blueprints/poll/poll.py',
     status: 'Published',
-    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/8',
+    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/tree/master/blueprints/poll',
     versionHistory: [{ version: '1.0.0', date: '2026-03-17', changes: 'Initial submission' }],
   },
 ];
@@ -463,14 +463,12 @@ export function Marketplace() {
               <span className="text-xs font-mono text-muted-foreground border border-border px-2 py-0.5 rounded">
                 Community Blueprints
               </span>
-              <span className="text-xs text-muted-foreground">·</span>
-              <span className="text-xs font-mono text-primary">{HARDCODED_BLUEPRINTS.length} blueprints</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
               <img src="/logo-dark.svg" alt="Blueprint Marketplace" className="h-9 md:h-11 w-auto" />
             </h1>
             <p className="text-muted-foreground max-w-xl text-sm leading-relaxed">
-              Reusable nano-contract blueprints for Hathor Network, submitted by the community. Royalties for blueprint developers are coming—Being an early contributor can pay off!
+              Reusable nano-contract blueprints for Hathor Network built by the community. Royalties for early contributors are coming.
             </p>
             <div className="flex gap-3 pt-1">
               <a
@@ -554,67 +552,62 @@ export function Marketplace() {
               </button>
             </motion.div>
           ) : (
-            <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {filteredBlueprints.map((bp, index) => (
                 <Dialog key={bp.id}>
                   <motion.div
                     layout
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.15, delay: index * 0.04 }}
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-40px" }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.35, delay: index * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
                   >
                     <DialogTrigger asChild>
                       <div
-                        className="flex items-center gap-4 px-4 py-3.5 bg-card hover:bg-secondary/30 transition-colors cursor-pointer group"
+                        className="flex flex-col gap-3 p-4 bg-card hover:bg-secondary/10 border border-border rounded-lg transition-all duration-200 cursor-pointer group"
                         onClick={() => setSelectedBlueprint(bp)}
                       >
-                        {/* Category */}
-                        <span
-                          className={`hidden sm:inline-flex text-[11px] font-medium px-2 py-0.5 rounded border flex-shrink-0 w-24 justify-center ${
-                            CATEGORY_COLORS[bp.category] ?? CATEGORY_COLORS.Other
-                          }`}
-                        >
-                          {bp.category}
-                        </span>
-
-                        {/* Name + Description */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-sm group-hover:text-primary transition-colors truncate">
-                              {bp.name}
-                            </span>
-                            <span
-                              className={`sm:hidden text-[10px] font-medium px-1.5 py-0.5 rounded border flex-shrink-0 ${
-                                CATEGORY_COLORS[bp.category] ?? CATEGORY_COLORS.Other
-                              }`}
-                            >
-                              {bp.category}
-                            </span>
-                          </div>
-                          <p className="text-xs text-muted-foreground truncate mt-0.5">{bp.description}</p>
-                        </div>
-
-                        {/* Author */}
-                        <div className="hidden md:flex items-center gap-1.5 flex-shrink-0">
-                          {bp.author.avatar ? (
-                            <picture>
+                        {/* Top row: category tag + author */}
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`text-[11px] font-medium px-2 py-0.5 rounded border ${
+                              CATEGORY_COLORS[bp.category] ?? CATEGORY_COLORS.Other
+                            }`}
+                          >
+                            {bp.category}
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            {bp.author.avatar ? (
                               <img
                                 src={bp.author.avatar}
                                 alt={bp.author.name}
-                                className="h-5 w-5 rounded-full"
+                                className="h-4 w-4 rounded-full"
                               />
-                            </picture>
-                          ) : (
-                            <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-[10px] text-primary font-bold">
-                              {bp.author.name[0]}
-                            </div>
-                          )}
-                          <span className="text-xs text-muted-foreground">{bp.author.name}</span>
+                            ) : (
+                              <div className="h-4 w-4 rounded-full bg-primary/20 flex items-center justify-center text-[8px] text-primary font-bold">
+                                {bp.author.name[0]}
+                              </div>
+                            )}
+                            <span className="text-[11px] text-muted-foreground">{bp.author.name}</span>
+                          </div>
                         </div>
 
-                        {/* Arrow */}
-                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 group-hover:text-primary transition-colors group-hover:translate-x-0.5 transform" />
+                        {/* Name */}
+                        <div>
+                          <h3 className="font-display font-semibold text-sm group-hover:text-primary transition-colors">
+                            {bp.name}
+                          </h3>
+                          <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">
+                            {bp.description}
+                          </p>
+                        </div>
+
+                        {/* Bottom: arrow hint */}
+                        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/60 group-hover:text-muted-foreground transition-colors">
+                          <span>View details</span>
+                          <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
                       </div>
                     </DialogTrigger>
                   </motion.div>
@@ -743,7 +736,7 @@ export function Marketplace() {
                               <Button variant="outline" className="w-full h-9 text-xs" asChild>
                                 <a href={selectedBlueprint.githubUrl} target="_blank">
                                   <Github className="mr-1.5 h-3.5 w-3.5" />
-                                  View Pull Request
+                                  View on GitHub
                                 </a>
                               </Button>
                               <p className="text-[10px] text-center text-muted-foreground pt-1">
