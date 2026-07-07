@@ -390,6 +390,63 @@ Polls enables the creation of on-chain governance votes where each participant's
     githubUrl: 'https://github.com/HathorNetwork/community-blueprints/tree/master/blueprints/poll',
     versionHistory: [{ version: '1.0.0', date: '2026-03-17', changes: 'Initial submission' }],
   },
+  {
+    id: 'pr-9',
+    name: 'Token Fair-Launch Platform with Bonding Curves',
+    description: 'A pump.fun-style token launchpad with bonding curve pricing. Create, trade, and automatically graduate tokens to a Dozer DEX pool.',
+    longDescription: `# Khensu Manager Blueprint - Token Fair-Launch Platform with Bonding Curves
+
+This blueprint implements Khensu Manager, a contract that manages a token launchpad with bonding curve pricing for the Hathor network. Tokens are created, traded on a bonding curve, and automatically graduated to a Dozer DEX pool when they reach a target market cap.
+
+## What it does
+
+Khensu Manager enables a **pump.fun-style** token launchpad where anyone can create a new token, trade it on a bonding curve with built-in price discovery, and have the token automatically migrate its liquidity to a full DEX (Dozer Pool Manager) once the bonding curve reaches its target market cap.
+
+## Main Workflow
+
+### Token Creation
+- Anyone can create a new token by depositing the network fee (0.01 HTR)
+- The contract mints the full token supply (default: 1 billion tokens) and holds it in reserve
+- Token metadata (name, symbol, image url, description, social links) stored on-chain
+- URLs validated to require \`https://\` prefix; image links must be >= 32 characters
+
+### Token Trading via Bonding Curve
+
+**Buy Tokens**: Users deposit HTR and withdraw tokens in a single atomic transaction. Price uses a custom bonding curve formula. Buy fee and creator fee collected. Slippage protection via internal balance. Purchase capped at 80% of total supply (remaining 20% reserved for DEX migration).
+
+**Sell Tokens**: Users deposit tokens and withdraw HTR using inverse bonding curve. Sell fee collected. Cannot sell after token migration.
+
+### Automatic Migration to DEX
+- Triggered automatically when the bonding curve reaches 80% tokens sold
+- Deposits HTR acquired + remaining 20% token supply into a Dozer pool
+- Creates and signs the pool on Dozer Pool Manager
+- Token marked as migrated; further bonding curve trading is disabled
+
+## Key Features
+- **Bonding Curve Pricing**: Custom curve formula with configurable constants
+- **Automatic DEX Graduation**: Tokens migrate to Dozer DEX when bonding curve fills
+- **Creator Rewards**: Token creators earn a fee on every buy transaction
+- **Multi-Tier Fee System**: Configurable fees for buying, selling, and creator rewards
+- **Slippage Protection**: Excess tokens/HTR held in internal balance for later withdrawal
+- **LRU Cache**: O(1) doubly-linked list tracking most recently active tokens
+- **Post-Migration Price Proxy**: After graduation, proxies price quotes from the Dozer DEX pool
+- **Search & Discovery**: Token lookup by symbol or name, multiple listing views
+- **Multi-Admin Support**: Multiple admin addresses with protected original creator
+- **Contract Upgradeability**: Built-in upgrade mechanism with semantic version control`,
+    author: {
+      name: 'BlueJaySamurai',
+      avatar: 'https://avatars.githubusercontent.com/u/172511983?v=4',
+      github: 'BlueJaySamurai',
+    },
+    version: '1.0.0',
+    timestamp: '2026-04-23T00:53:36Z',
+    category: 'DeFi',
+    code: '// No code preview available',
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/community-blueprints/e136cff534989de1b8e7ba594ef892cfe4f929e7/blueprints/khensu-manager/khensu_manager.py',
+    status: 'Published',
+    githubUrl: 'https://github.com/HathorNetwork/community-blueprints/pull/9',
+    versionHistory: [{ version: '1.0.0', date: '2026-04-23', changes: 'Initial submission' }],
+  },
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
