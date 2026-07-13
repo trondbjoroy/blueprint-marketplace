@@ -342,6 +342,221 @@ Built with Hathor Nano Contracts for Bitcoin-grade security and verifiable on-ch
     versionHistory: [{ version: '1.0.0', date: '2025-11-19', changes: 'Initial release with payout pre-validation and configurable house edge' }],
   },
   {
+    id: 'bet',
+    name: 'Bet',
+    description: 'An oracle-based betting contract. Users bet on outcomes, an oracle sets the result, and winners claim proportional payouts.',
+    longDescription: `# Bet Blueprint
+
+The **Bet** blueprint implements an oracle-based betting contract on the Hathor Network. An oracle provides the final result, participants bet on outcomes, and winners withdraw proportional payouts.
+
+## Lifecycle
+
+1. Owner creates the contract with an oracle script, token UID, and betting deadline
+2. Users call \`bet()\` with a result prediction and token deposit
+3. Oracle calls \`set_result()\` with a signed final result
+4. Winning users call \`withdraw()\` to claim proportional payouts
+
+## Key Features
+
+- **Oracle-based resolution**: A designated oracle signs the final result, verified via script checksig
+- **Proportional payouts**: Winners share the total pool proportionally based on their bet share of the winning result
+- **Time-bounded betting**: Bets are only accepted before the configured deadline
+- **Token validation**: All transactions are validated against the configured token UID
+- **Secure withdrawal**: Cumulative withdrawals tracked per address to prevent double-claiming
+
+## Payout Formula
+
+\`\`\`
+winner_payout = (address_bet_on_winning_result / total_bets_on_winning_result) * total_all_result_bets
+\`\`\`
+
+## State Variables
+
+- \`bets_total\`: Total bets per result
+- \`bets_address\`: Bets per (result, address) pair
+- \`address_details\`: Bets grouped by address
+- \`withdrawals\`: Amount already withdrawn per address
+- \`total\`: Total bets across all results
+- \`final_result\`: The oracle's final result
+- \`oracle_script\`: Oracle's script for signature verification
+- \`date_last_bet\`: Deadline for placing bets
+- \`token_uid\`: Token used for betting
+
+## Methods
+
+- **initialize(oracle_script, token_uid, date_last_bet)**: Sets up the contract
+- **bet(address, score)**: Place a bet with a token deposit
+- **set_result(result)**: Oracle sets the signed final result
+- **withdraw()**: Claim proportional payout after result is set
+- **get_max_withdrawal(address)**: View max withdrawable amount for an address
+- **get_winner_amount(address)**: View computed winner payout for an address
+- **has_result()**: View whether the result has been set`,
+    author: {
+      name: 'Hathor Network',
+      avatar: 'https://github.com/HathorNetwork.png',
+      github: 'HathorNetwork',
+    },
+    version: '1.0.0',
+    timestamp: '2026-07-13T00:00:00Z',
+    category: 'Betting',
+    code: `from hathor.nanocontract.blueprint import Blueprint, export
+from hathor.nanocontract.exception import NCFail
+from hathor.nanocontract.types import Amount, Timestamp, TokenUid, Result, Address, TxOutputScript
+
+
+class InvalidToken(NCFail):
+    pass
+
+
+class ResultAlreadySet(NCFail):
+    pass
+
+
+class ResultNotAvailable(NCFail):
+    pass
+
+
+class TooManyActions(NCFail):
+    pass
+
+
+class TooLate(NCFail):
+    pass
+
+
+class InsufficientBalance(NCFail):
+    pass
+
+
+class InvalidOracleSignature(NCFail):
+    pass
+
+
+@export
+class Bet(Blueprint):
+    bets_total: dict[Result, Amount]
+    bets_address: dict[tuple[Result, Address], Amount]
+    address_details: dict[Address, dict[Result, Amount]]
+    withdrawals: dict[Address, Amount]
+    total: Amount
+    final_result: Result | None
+    oracle_script: TxOutputScript
+    date_last_bet: Timestamp
+    token_uid: TokenUid
+
+    @public
+    def initialize(self, ctx, oracle_script, token_uid, date_last_bet):
+        if len(ctx.actions) != 0:
+            raise TooManyActions()
+        self.bets_total = {}
+        self.bets_address = {}
+        self.address_details = {}
+        self.withdrawals = {}
+        self.total = Amount(0)
+        self.final_result = None
+        self.oracle_script = oracle_script
+        self.date_last_bet = date_last_bet
+        self.token_uid = token_uid
+
+    @view
+    def has_result(self):
+        return self.final_result is not None
+
+    def fail_if_result_is_available(self):
+        if self.final_result is not None:
+            raise ResultAlreadySet()
+
+    def fail_if_result_is_not_available(self):
+        if self.final_result is None:
+            raise ResultNotAvailable()
+
+    def fail_if_invalid_token(self, action):
+        if action.token_uid != self.token_uid:
+            raise InvalidToken(
+                f"Invalid token uid: "
+                f"expected={self.token_uid.hex()}, "
+                f"got={action.token_uid.hex()}"
+            )
+
+    def _get_action(self, ctx):
+        if len(ctx.actions) != 1:
+            raise TooManyActions()
+        if self.token_uid not in ctx.actions:
+            raise InvalidToken(self.token_uid.hex())
+        return ctx.get_single_action(self.token_uid)
+
+    @public(allow_deposit=True)
+    def bet(self, ctx, address, score):
+        action = self._get_action(ctx)
+        assert isinstance(action, NCDepositAction)
+        self.fail_if_result_is_available()
+        self.fail_if_invalid_token(action)
+        if ctx.timestamp > self.date_last_bet:
+            raise TooLate()
+
+        self.total += action.amount
+        if score not in self.bets_total:
+            self.bets_total[score] = Amount(0)
+        self.bets_total[score] += action.amount
+
+        if (score, address) not in self.bets_address:
+            self.bets_address[(score, address)] = Amount(0)
+        self.bets_address[(score, address)] += action.amount
+
+        if address not in self.address_details:
+            self.address_details[address] = {}
+        if score not in self.address_details[address]:
+            self.address_details[address][score] = Amount(0)
+        self.address_details[address][score] += action.amount
+
+    @public
+    def set_result(self, ctx, result):
+        self.fail_if_result_is_available()
+        if not result.checksig(
+            self.syscall.get_contract_id(),
+            self.oracle_script,
+        ):
+            raise InvalidOracleSignature()
+        self.final_result = result.data
+
+    @public(allow_withdrawal=True)
+    def withdraw(self, ctx):
+        action = self._get_action(ctx)
+        assert isinstance(action, NCWithdrawalAction)
+        self.fail_if_result_is_not_available()
+        self.fail_if_invalid_token(action)
+        address = ctx.get_caller()
+        max_withdrawal = self.get_max_withdrawal(address)
+        if action.amount > max_withdrawal:
+            raise InsufficientBalance()
+        if address not in self.withdrawals:
+            self.withdrawals[address] = Amount(0)
+        self.withdrawals[address] += action.amount
+
+    @view
+    def get_max_withdrawal(self, address):
+        return self.get_winner_amount(address) - self.withdrawals.get(
+            address, Amount(0)
+        )
+
+    @view
+    def get_winner_amount(self, address):
+        self.fail_if_result_is_not_available()
+        if self.final_result not in self.bets_total:
+            return Amount(0)
+        result_total = self.bets_total[self.final_result]
+        if result_total == 0:
+            return Amount(0)
+        address_total = self.address_details.get(address, {}).get(
+            self.final_result, Amount(0)
+        )
+        return Amount(address_total * self.total // result_total)`,
+    codeUrl: 'https://raw.githubusercontent.com/HathorNetwork/hathor-core/2e22d0f8e14b38dde10388bdbd97362c435be2e9/hathor_tests/nanocontracts/test_blueprints/bet.py',
+    status: 'Published',
+    githubUrl: 'https://github.com/HathorNetwork/hathor-core/blob/2e22d0f8e14b38dde10388bdbd97362c435be2e9/hathor_tests/nanocontracts/test_blueprints/bet.py',
+    versionHistory: [{ version: '1.0.0', date: '2026-07-13', changes: 'Initial release' }],
+  },
+  {
     id: 'pr-8',
     name: 'Polls',
     description: 'Token-weighted on-chain voting with linear weight model, time-bounded polls, and vote withdrawal.',
